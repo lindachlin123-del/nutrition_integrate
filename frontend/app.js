@@ -14,29 +14,13 @@ function stats(){
 }
 function updateCalc(){
   const s=stats(); $('calc-error').textContent=s?'':'請輸入有效身高（100–250 cm）、體重（20–400 kg）及係數（0.3–3）。';
-  if(!s){for(const id of ['bmi','bmi-class','ideal','normal-range','daily-protein','protein-formula']) $(id).textContent='—'; updateRenal();return;}
+  if(!s){for(const id of ['bmi','bmi-class','ideal','normal-range','daily-protein','protein-formula']) $(id).textContent='—'; return;}
   $('bmi').textContent=fmt(s.bmi);
   $('bmi-class').textContent=s.bmi<18.5?'體重過輕':s.bmi<24?'正常範圍':s.bmi<27?'體重過重':s.bmi<30?'輕度肥胖':s.bmi<35?'中度肥胖':'重度肥胖';
   $('ideal').textContent=fmt(s.ideal)+' kg';
   $('normal-range').textContent='BMI 18.5～未滿 24：約 '+fmt(18.5*s.h*s.h)+'～'+fmt(24*s.h*s.h)+' kg';
   $('daily-protein').textContent=fmt(s.base*s.factor)+' g/天';
   $('protein-formula').textContent=fmt(s.base)+' kg × '+fmt(s.factor)+' g/kg/天';
-  updateRenal();
-}
-function updateRenal(){
-  const type=$('renal-type').value, s=stats(), f=number('renal-factor');
-  const descriptions={unknown:'請先確認腎臟病治療狀態。',nondialysis:'KDIGO 2024 CKD G3–G5 未透析參考：0.8 g/kg/天，須個別評估。',hemo:'血液透析蛋白質需求常高於未透析者，需依營養狀態與醫療團隊評估。',peritoneal:'腹膜透析需考量蛋白質流失、營養狀況及醫療團隊評估。'};
-  $('renal-guide').textContent=descriptions[type];
-  const valid=Boolean(s)&&type!=='unknown'&&$('renal-factor').value.trim()!==''&&Number.isFinite(f)&&f>=0.3&&f<=2.5&&$('renal-ack').checked;
-  $('renal-error').textContent= type==='unknown'?'請先選擇治療狀態。':!$('renal-ack').checked?'請先確認已閱讀個別化評估提醒。':!s?'請先至健康計算器輸入有效身高與體重。':!$('renal-factor').value?'請由營養師確認蛋白質係數。':f<0.3||f>2.5?'係數須在 0.3–2.5 之間。':'';
-  $('renal-protein').textContent=valid?fmt(($('renal-basis').value==='actual'?s.kg:s.ideal)*f)+' g/天':'—';
-  $('renal-formula').textContent=valid?fmt($('renal-basis').value==='actual'?s.kg:s.ideal)+' kg × '+fmt(f)+' g/kg/天（請由營養師確認）':'須確認治療狀態、係數及評估體重';
-}
-function renalSelection(){
-  const defaults={unknown:'',nondialysis:'0.8',hemo:'',peritoneal:''};
-  $('renal-factor').value=defaults[$('renal-type').value];
-  $('renal-ack').checked=false;
-  updateRenal();
 }
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function renderFoods(){
@@ -65,8 +49,6 @@ function toDataURL(file){return new Promise((resolve,reject)=>{const r=new FileR
 function setTab(id){document.querySelectorAll('.tab').forEach(b=>{const active=b.dataset.tab===id;b.classList.toggle('active',active);b.setAttribute('aria-selected',active?'true':'false');});document.querySelectorAll('.tab-pane').forEach(p=>{p.hidden=p.id!==id;p.classList.toggle('active',p.id===id);});}
 function init(){
   ['height','weight','basis','factor'].forEach(id=>['input','change'].forEach(evt=>$(id).addEventListener(evt,updateCalc)));
-  ['renal-factor','renal-basis','renal-ack'].forEach(id=>['input','change'].forEach(evt=>$(id).addEventListener(evt,updateRenal)));
-  $('renal-type').addEventListener('change',renalSelection);
   document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
   $('add-item').addEventListener('click',()=>addFood());
   $('food-list').addEventListener('input',e=>{const row=e.target.closest('[data-index]');if(!row||!e.target.dataset.key)return;const idx=Number(row.dataset.index), key=e.target.dataset.key;let v=e.target.value;if(key!=='name')v=(key==='proteinPer100g'&&v==='')?null:Math.max(0,Math.min(key==='grams'?5000:100,Number(v)||0));foods[idx][key]=v;recalcFoods();});

@@ -6,5 +6,49 @@
 <section id="calculator" class="tab-pane active"><div class="section-head"><h2>身體指標與每日蛋白質</h2><p>修改數值後立即更新，不需按計算。</p></div><div class="card"><div class="grid two"><label>身高 <span>cm</span><input id="height" type="number" inputmode="decimal" min="100" max="250" step="0.1" value="165"></label><label>目前體重 <span>kg</span><input id="weight" type="number" inputmode="decimal" min="20" max="400" step="0.1" value="60"></label><label>蛋白質計算使用體重<select id="basis"><option value="actual">目前體重</option><option value="ideal">BMI 22 參考體重</option></select></label><label>蛋白質係數 <span>g/kg/天</span><input id="factor" type="number" min="0.3" max="3" step="0.1" value="1.1"></label></div><p id="calc-error" class="error" role="status" aria-live="polite"></p><div class="metrics"><article class="metric"><span>BMI</span><strong id="bmi">—</strong><small id="bmi-class">—</small></article><article class="metric"><span>參考理想體重</span><strong id="ideal">—</strong><small id="normal-range">—</small></article><article class="metric accent"><span>每日蛋白質估算</span><strong id="daily-protein">—</strong><small id="protein-formula">—</small></article></div><p class="footnote">成人 BMI 正常範圍：18.5 ≤ BMI &lt; 24（台灣標準）。BMI 22 只是參考體重計算法，未必適用所有人。蛋白質係數為可編輯估算值，特殊疾病請另行評估。</p></div></section>
 <section id="food" class="tab-pane" hidden><div class="section-head"><h2>照片辨識與食物份量記錄</h2><p>可先手動記錄；連線 Python AI 服務後，才會啟用照片辨識。</p></div><div class="card"><label class="upload"><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"><span class="upload-icon">◎</span><strong>點選拍照或上傳餐點照片</strong><small>支援 JPG、PNG、WEBP，檔案上限 5 MB</small></label><img id="preview" class="preview" alt="上傳的食物照片預覽" hidden><div class="row-wrap"><button id="analyze" class="primary" disabled>AI 辨識照片</button><span id="ai-status" class="muted" aria-live="polite">尚未設定 AI 後端，仍可手動記錄。</span></div><details class="config"><summary>網站管理者：AI 服務設定</summary><p>填入 Python API 部署後的 HTTPS 網址。<strong>不要在此輸入 API 金鑰。</strong></p><label>Python API 網址<input id="endpoint" type="url" placeholder="https://your-worker.example.workers.dev"></label><button id="save-endpoint" class="secondary">在這台裝置儲存網址</button><p class="footnote">網址只保存在此瀏覽器。一般訪客使用時，建議在網站程式內設定統一的預設網址。</p></details></div>
 <div class="card"><div class="card-head"><h3>食物份量清單</h3><button class="secondary" id="add-item">＋ 新增食物</button></div><p class="muted small">AI 結果可能認錯食材與份量，請人工確認、修改每項克數與每 100 公克蛋白質。<strong>拍照無法可靠判定精確重量、鉀、磷或鈉含量。</strong></p><div id="food-list" class="food-list"></div><div class="total"><span>此餐估算蛋白質合計</span><strong id="food-total">0.0 g</strong></div></div></section>
-<section id="kidney" class="tab-pane" hidden><div class="section-head"><h2>腎臟病蛋白質評估</h2><p>將一般健康計算與腎臟病營養評估分開，避免錯誤套用。</p></div><div class="card"><div class="alert">此區僅供營養師衛教與初步估算；不是腎臟病分期診斷、治療處方或個人化飲食醫囑。孕哺期、急性疾病、肌少症、營養不良等情況須由醫療團隊另行評估。</div><div class="grid two"><label>治療狀態<select id="renal-type"><option value="unknown">尚未確定／其他</option><option value="nondialysis">慢性腎臟病 G3–G5，未透析</option><option value="hemo">血液透析</option><option value="peritoneal">腹膜透析</option></select></label><label>評估用體重<select id="renal-basis"><option value="actual">目前體重（由計算器帶入）</option><option value="ideal">BMI 22 參考體重</option></select></label><label>營養師確認的蛋白質係數 <span>g/kg/天</span><input id="renal-factor" type="number" min="0.3" max="2.5" step="0.1" placeholder="先選擇治療狀態"></label><div class="field-note" id="renal-guide">請先選擇治療狀態。</div></div><p id="renal-error" class="error" role="status" aria-live="polite"></p><div class="renal-result"><span>每日蛋白質試算（非個別醫囑）</span><strong id="renal-protein">—</strong><small id="renal-formula">須由營養師確認係數及體重基準</small></div><div class="check"><input type="checkbox" id="renal-ack"><label for="renal-ack">我了解腎臟病蛋白質目標須根據治療狀態、營養狀況、體重基準與醫療團隊評估調整。</label></div><p class="footnote">臨床參考：KDIGO 2024 建議成人 CKD G3–G5 未透析可考慮 0.8 g/kg/天；透析族群通常需求不同。這裡預填的數值僅方便營養師編輯，不代表網站自行處方。不要單憑此工具自行採用極低蛋白飲食。</p></div></section>
-<section class="source"><h3>計算依據與資料安全</h3><p>本工具計算在瀏覽器本地進行。食物照片只有在使用者按「AI 辨識照片」後，才傳送到你設定的第三方 AI 後端；請先取得使用者同意，避免上傳含個資或敏感資訊的照片。</p><div class="links"><a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=542&pid=9736&sid=9731" target="_blank" rel="noopener">國民健康署：成人健康體重</a><a href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener">KDIGO 2024 CKD 指引</a><a href="https://diabetesjournals.org/care/article/49/Supplement_1/S246/163914/11-Chronic-Kidney-Disease-and-Risk-Management%20/" target="_blank" rel="noopener">ADA 2026 CKD 蛋白質建議</a></div></section></main><footer>營養師健康計算室 · 教育與初步估算用 · 不取代專業診療</footer><script src="config.js" defer></script><script src="app.js" defer></script></body></html>
+<section id="kidney" class="tab-pane" hidden>
+  <div class="section-head"><h2>CKD 營養師份數與每日餐次規劃</h2><p>依提供的七頁 PDF 製作：先計算處方，再安排食物代換份數與四餐分配。</p></div>
+  <div class="ck-banner"><strong>專業測試中，尚未開放患者使用</strong><p>僅供腎臟專科營養師與臨床營養師審閱。這是示範代換模型，不是個別飲食處方；請以模擬個案測試，勿輸入真實患者個資。</p></div>
+  <div class="ck-two">
+    <section class="card"><h3>01｜基本資料與處方設定</h3>
+      <button type="button" class="secondary" id="ck-copy">從健康計算器帶入身高體重</button>
+      <div class="grid two ck-fields">
+        <label>身高（cm）<input id="ck-height" type="number" min="100" max="250" step="0.1" value="160"></label>
+        <label>目前體重（kg）<input id="ck-weight" type="number" min="20" max="400" step="0.1" value="60"></label>
+        <label>CKD 情境<select id="ck-mode"><option value="nondialysis">未透析 CKD G3–G5</option><option value="hemo">血液透析（需自訂處方）</option><option value="peritoneal">腹膜透析（需自訂處方）</option></select></label>
+        <label>計算體重基準<select id="ck-basis"><option value="actual">目前體重</option><option value="ideal">BMI 22 參考體重</option></select></label>
+        <label>熱量係數（kcal/kg）<select id="ck-energy"><option value="25">25</option><option value="30" selected>30</option><option value="35">35</option></select></label>
+        <label>蛋白質係數（g/kg）<input id="ck-protein" type="number" min="0.3" max="2.5" step="0.05" value="0.8"></label>
+        <label>脂肪目標熱量比<select id="ck-fat"><option value="25">25%</option><option value="30" selected>30%</option><option value="35">35%</option></select></label>
+        <label>低蛋白澱粉上限（份）<select id="ck-low-cap"><option value="0">0</option><option value="2">2</option><option value="3">3</option><option value="5" selected>一般：約 5 份</option><option value="8">8（需個別評估）</option></select></label>
+      </div>
+      <label class="ck-ack"><input type="checkbox" id="ck-professional"> <span>透析模式：營養師已確認個別化蛋白質處方（不使用未透析低蛋白預設值）</span></label>
+      <p id="ck-mode-warning" class="ck-note"></p><p id="ck-error" class="error" aria-live="polite"></p>
+      <p class="footnote">熱量／蛋白質／脂肪係數及代換規格以所附 PDF 為示範，並非臨床上已驗證的個案建議；實際營養治療須評估水腫、乾體重、營養狀況、血糖及鉀磷限制。</p>
+    </section>
+    <section class="card"><h3>02｜計算結果</h3><div id="ck-results">
+      <div class="ck-metrics"><div><span>BMI</span><strong id="ck-bmi">—</strong></div><div><span>理想體重</span><strong id="ck-ideal">—</strong></div><div><span>每日熱量</span><strong id="ck-kcal">—</strong></div><div><span>每日蛋白質</span><strong id="ck-p">—</strong></div><div><span>蛋白質參考區間</span><strong id="ck-protein-range">—</strong></div><div><span>每日醣類</span><strong id="ck-carb">—</strong></div><div><span>每日脂肪</span><strong id="ck-fat-g">—</strong></div></div>
+      <p id="ck-formula" class="ck-note"></p><p class="footnote">三大營養素：蛋白質先以 g/kg 決定，脂肪以熱量比計算，剩餘熱量分配醣類。醣類與脂肪皆為試算值。</p>
+    </div></section>
+  </div>
+  <section class="card ck-wide"><div class="ck-head-row"><h3>03｜每日食物代換份數</h3><button id="ck-reset" class="secondary">依處方重新試算</button></div>
+    <p class="muted small">固定豆漿 1 份、蔬菜 3 份、水果 2 份；先扣豆漿、蔬菜、主食蛋白質，剩餘才換算豆魚蛋肉類。可編輯份數，每次調整 0.5 份。</p>
+    <div class="ck-note"><b>低蛋白熱量補充彈性分配</b><p>低蛋白澱粉示範為冬粉乾重 15 g／份；植物油計入原有油脂總份數，不額外加油。不能滿足處方目標時顯示差距，須由營養師重新配置。</p></div>
+    <div class="ck-table-wrap"><table class="ck-table"><thead><tr><th>食物類別</th><th>每日份數</th><th>每份示範規格</th><th>蛋白質／份</th><th>熱量／份</th><th>每日實際重量</th></tr></thead><tbody id="ck-daily-body"></tbody></table></div>
+    <p id="ck-edit-error" class="error"></p><p id="ck-supplement" class="ck-note"></p><div id="ck-warning" class="ck-warning"></div>
+    <div class="ck-note"><b>豆魚蛋肉類份數：先扣除其他食物蛋白質</b><p id="ck-protein-steps"></p></div>
+    <div id="ck-daily-totals" class="ck-totals"></div><p class="ck-gap" id="ck-gap"></p>
+    <p class="footnote">示範係數參照 PDF。豆漿 240 mL、80 kcal、蛋白質 7 g 是待核對的示範值；主食、蔬菜、水果與肉類換成實際公克數時，必須依生熟狀態、可食部和營養資料庫確認。</p>
+  </section>
+  <section class="card ck-wide"><div class="ck-head-row"><h3>04｜一日餐次安排</h3><button class="secondary" id="ck-meal-auto">依每日份數重新分配四餐</button></div>
+    <p class="muted small">早餐、午餐、晚餐、下午點心；每餐份數以 0.5 份調整。所有餐次加總必須等於每日份數，差額會標紅提示。</p>
+    <div class="ck-table-wrap"><table class="ck-table"><thead id="ck-meal-head"></thead><tbody id="ck-meal-body"></tbody></table></div><p id="ck-meal-status" class="ck-warning"></p>
+    <h4>各餐實際重量與熱量（示範）</h4><div id="ck-meal-cards" class="ck-meal-cards"></div>
+  </section>
+  <section class="card ck-wide"><h3>05｜實際食物重量對照（待授權圖鑑照片）</h3>
+    <p>份數不等於固定碗數。例如主食 1 份示範醣類約 15 g、蛋白質 2 g；白飯或其他主食實際重量必須依食品及生熟狀態換算。照片需有授權及實際秤重資訊。</p>
+    <p class="ck-note">低蛋白點心：若目前體重低於 BMI 22 參考體重，可以提示營養師評估熱量是否不足；不能只根據體重就判斷營養不良或自動加餐。</p>
+    <button class="secondary" id="ck-print">列印／另存為 PDF</button>
+  </section>
+</section>
+<section class="source"><h3>計算依據與資料安全</h3><p>本工具計算在瀏覽器本地進行。食物照片只有在使用者按「AI 辨識照片」後，才傳送到你設定的第三方 AI 後端；請先取得使用者同意，避免上傳含個資或敏感資訊的照片。</p><div class="links"><a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=542&pid=9736&sid=9731" target="_blank" rel="noopener">國民健康署：成人健康體重</a><a href="https://kdigo.org/guidelines/ckd-evaluation-and-management/" target="_blank" rel="noopener">KDIGO 2024 CKD 指引</a><a href="https://diabetesjournals.org/care/article/49/Supplement_1/S246/163914/11-Chronic-Kidney-Disease-and-Risk-Management%20/" target="_blank" rel="noopener">ADA 2026 CKD 蛋白質建議</a></div></section></main><footer>營養師健康計算室 · 教育與初步估算用 · 不取代專業診療</footer><script src="config.js" defer></script><script src="app.js" defer></script><script src="ckd.js" defer></script></body></html>

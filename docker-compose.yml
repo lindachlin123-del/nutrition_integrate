@@ -1,0 +1,10 @@
+services:
+  nutrition-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5500}
+      YOLO_DEVICE: cpu
+    volumes:
+      - ./models/best.pt:/app/upstream/food256_yv8m_ddp_640/weights/best.pt:ro
